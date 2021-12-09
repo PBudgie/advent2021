@@ -19,8 +19,20 @@ def getNumsAndBoards(rawInput):
 
   return (numbersCalled, bingoBoards)
 
+def isWinner(boardMarks):
+  # Check all rows
+  for i in range(5):
+    if 0 not in [boardMarks[i][x] for x in range(5)]:
+      return True
+  # Check all columns
+  for i in range(5):
+    if 0 not in [boardMarks[x][i] for x in range(5)]:
+      return True
+  # No bingo found
+  return False
+
 def isBoardWinner(boardMarks, lastCalled):
-  i,j = lastCalled
+  j,i = lastCalled
   # Check row
   rowOfLastMarked = [boardMarks[i][x] for x in range(5)]
   if 0 not in rowOfLastMarked:
@@ -37,9 +49,9 @@ def markBoardsAndFindWinners(bingoBoards, boardMarks, numberCalled):
   for boardNum in range(len(bingoBoards)):
     for i in range(5):
       for j in range(5):
-        if bingoBoards[boardNum][i][j] == numberCalled:
-          boardMarks[boardNum][i][j] = 1
-          indexOfWinners = [x for x in range(len(bingoBoards)) if isBoardWinner(bingoBoards[x], (i,j))]
+        if bingoBoards[boardNum][j][i] == numberCalled:
+          boardMarks[boardNum][j][i] = 1
+          indexOfWinners = [x for x in range(len(bingoBoards)) if isBoardWinner(boardMarks[x], (j,i))]
   return indexOfWinners
 
 def getBoardScore(board, marks, lastNumCalled):
@@ -52,15 +64,17 @@ def getBoardScore(board, marks, lastNumCalled):
   return unmarkedSum * lastNumCalled
 
 # Main program
-numbersCalled, bingoBoards = getNumsAndBoards(getFileAsString('4-test.txt'))
+# DEFINITELY VERY UGLY, would love to clean up
+numbersCalled, bingoBoards = getNumsAndBoards(getFileAsString('4-input.txt'))
 boardMarks = [[[0 for i in range(5)] for j in range(5)] for k in range(len(bingoBoards))]
 
 for numCalled in numbersCalled:
   winners = markBoardsAndFindWinners(bingoBoards, boardMarks, numCalled)
-  print(winners)
   bingoBoards = [bingoBoards[x] for x in range(len(bingoBoards)) if x not in winners]
   boardMarks = [boardMarks[x] for x in range(len(boardMarks)) if x not in winners]
   if len(bingoBoards) == 1:
-    print(getBoardScore(bingoBoards[0], boardMarks[0], numCalled))
-    break
-  
+    if not isWinner(boardMarks[0]):
+      continue
+    else:
+      print(getBoardScore(bingoBoards[0], boardMarks[0], numCalled))
+      break
