@@ -7,7 +7,9 @@ def getFuelToAlignTo(crabPositions, positionToAlignTo):
   # Update this method
   totalFuel = 0
   for crabPosition in crabPositions:
-    totalFuel += abs(crabPosition - positionToAlignTo)
+    distToMove = abs(crabPosition - positionToAlignTo)
+    fuelToMove = distToMove * (distToMove + 1) / 2
+    totalFuel += fuelToMove
   return totalFuel
 
 crabPositions = getCrabPositions('7-input.txt')
